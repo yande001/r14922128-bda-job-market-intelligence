@@ -1,0 +1,15 @@
+__pycache__/
+*.py[cod]
+.env
+.venv/
+venv/
+.ipynb_checkpoints/
+.DS_Store
+data/lake/
+spark-warehouse/
+*.log
+
+# report build artifacts (keep only the final r14922128.pdf)
+report/report.html
+report/report.odt
+report/report.pdf

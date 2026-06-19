@@ -1,0 +1,108 @@
+# Skill gazetteer for skill extraction (spark_jobs/skill_extract.py).
+# Each canonical skill maps to a list of case-insensitive aliases (zh + en).
+# Matching is done on word boundaries over title + description + requirements.
+# This is the explainable, fast baseline; skillNer/MLlib is documented as the
+# future upgrade in the report.
+
+programming_language:
+  Python: [python, 派森]
+  Java: [java]
+  JavaScript: [javascript, js]
+  TypeScript: [typescript, ts]
+  C++: ["c++", cpp]
+  C#: ["c#", csharp]
+  C: [" c ", "c語言"]
+  Go: [golang, "go語言"]
+  Rust: [rust]
+  Scala: [scala]
+  Kotlin: [kotlin]
+  Swift: [swift]
+  PHP: [php]
+  Ruby: [ruby]
+  R: ["r語言"]
+  SQL: [sql]
+  Shell: [shell, bash, "shell script"]
+  MATLAB: [matlab]
+
+framework:
+  React: [react, "react.js", reactjs]
+  Vue: [vue, "vue.js", vuejs]
+  Angular: [angular, angularjs]
+  "Node.js": ["node.js", nodejs, node]
+  Django: [django]
+  Flask: [flask]
+  FastAPI: [fastapi]
+  "Spring Boot": ["spring boot", springboot, spring]
+  ".NET": [".net", dotnet, asp.net]
+  Express: ["express.js", expressjs, express]
+  "Next.js": ["next.js", nextjs]
+  Laravel: [laravel]
+  TensorFlow: [tensorflow]
+  PyTorch: [pytorch]
+  "scikit-learn": ["scikit-learn", sklearn]
+  Pandas: [pandas]
+  Spark: [spark, pyspark, "spark sql"]
+  Hadoop: [hadoop, mapreduce]
+  Flink: [flink]
+  Kafka: [kafka]
+  Airflow: [airflow]
+
+database:
+  MySQL: [mysql]
+  PostgreSQL: [postgresql, postgres]
+  MongoDB: [mongodb, mongo]
+  Redis: [redis]
+  Oracle: ["oracle db", "oracle database"]
+  "SQL Server": ["sql server", mssql]
+  Elasticsearch: [elasticsearch, elastic]
+  Cassandra: [cassandra]
+  Snowflake: [snowflake]
+  BigQuery: [bigquery]
+  ClickHouse: [clickhouse]
+
+cloud:
+  AWS: [aws, "amazon web services"]
+  GCP: [gcp, "google cloud"]
+  Azure: [azure, "microsoft azure"]
+  Alibaba Cloud: ["alibaba cloud", aliyun, "阿里雲"]
+
+devops:
+  Docker: [docker]
+  Kubernetes: [kubernetes, k8s]
+  Terraform: [terraform]
+  Ansible: [ansible]
+  Jenkins: [jenkins]
+  "CI/CD": [ci/cd, cicd, "ci / cd"]
+  Git: [git, github, gitlab]
+  Linux: [linux, ubuntu, centos]
+  Prometheus: [prometheus]
+  Grafana: [grafana]
+
+data_ml:
+  "Machine Learning": ["machine learning", "機器學習", "ml"]
+  "Deep Learning": ["deep learning", "深度學習"]
+  NLP: [nlp, "自然語言處理"]
+  "Computer Vision": ["computer vision", "電腦視覺", cv]
+  "Data Analysis": ["data analysis", "資料分析", "數據分析"]
+  "Data Engineering": ["data engineering", "資料工程"]
+  "ETL": [etl]
+  Tableau: [tableau]
+  "Power BI": ["power bi", powerbi]
+  LLM: [llm, "large language model", "gpt", "大型語言模型"]
+  Statistics: [statistics, "統計"]
+
+web_mobile:
+  HTML: [html, html5]
+  CSS: [css, css3, scss, sass]
+  "REST API": ["rest api", restful, "rest"]
+  GraphQL: [graphql]
+  Android: [android]
+  iOS: [ios]
+  "React Native": ["react native"]
+  Flutter: [flutter]
+
+soft_general:
+  "Project Management": ["project management", "專案管理", pmp]
+  Agile: [agile, scrum, "敏捷"]
+  Communication: ["溝通", "communication"]
+  English: ["英文", "english", toeic]

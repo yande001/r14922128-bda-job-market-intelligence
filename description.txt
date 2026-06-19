@@ -1,0 +1,14 @@
+Final Project: Design a System That Monetizes Data
+
+Design a system that turns data into revenue. Your submission must address both the technical architecture and the business model behind it. In your report, clearly explain:
+(1) who your target customers are.
+(2) how you know this need exists — including your full data-acquisition process (you may build on the methodology from Homework 2) 
+
+(3) how much time, effort, or money the customer would be willing to invest.
+(4) Analyzing the difficulties you would face when promoting the product earns bonus points.
+
+Submit a single PDF report (in English) with your GitHub repository link on the first page. Deploying your system online earns additional bonus points.
+
+Please read the attached PDF for full instructions, submission format, and grading criteria.
+
+Note: Your PDF report should be named <student_id>.pdf; for example, "b12902000.pdf".

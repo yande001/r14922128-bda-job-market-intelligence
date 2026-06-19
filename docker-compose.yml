@@ -1,0 +1,117 @@
+# Job-Market Intelligence Platform — local stack.
+# Each service maps to a Big Data course concept (see README architecture).
+services:
+
+  # --- Distributed object store / data lake (bronze/silver/gold) ---
+  minio:
+    image: minio/minio:RELEASE.2024-09-22T00-33-43Z
+    command: server /data --console-address ":9001"
+    environment:
+      MINIO_ROOT_USER: minioadmin
+      MINIO_ROOT_PASSWORD: minioadmin
+    ports:
+      - "9000:9000"   # S3 API
+      - "9001:9001"   # web console
+    volumes:
+      - minio_data:/data
+    # The lake writer (scrapers/lake.py) creates the bucket on first use, so no
+    # separate bucket-init service is needed.
+
+  # --- Raw NoSQL store (schema-on-read documents) ---
+  mongo:
+    image: mongo:7.0
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongo_data:/data/db
+    healthcheck:
+      test: ["CMD", "mongosh", "--quiet", "--eval", "db.adminCommand('ping')"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+
+  # --- Serving SQL store (gold marts) ---
+  postgres:
+    image: postgres:16
+    environment:
+      POSTGRES_DB: jobmarket
+      POSTGRES_USER: jobmarket
+      POSTGRES_PASSWORD: jobmarket
+    ports:
+      - "5432:5432"
+    volumes:
+      - pg_data:/var/lib/postgresql/data
+      - ./sql/schema.sql:/docker-entrypoint-initdb.d/01_schema.sql:ro
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U jobmarket -d jobmarket"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+
+  # --- Batch processing engine (PySpark, local[*]). Idles; jobs run via exec. ---
+  spark:
+    build:
+      context: .
+      dockerfile: Dockerfile.spark
+    depends_on:
+      minio:
+        condition: service_started
+      postgres:
+        condition: service_healthy
+    environment: &lake_env
+      MINIO_ENDPOINT: http://minio:9000
+      MINIO_ACCESS_KEY: minioadmin
+      MINIO_SECRET_KEY: minioadmin
+      MINIO_BUCKET: jobmarket
+      MONGO_URI: mongodb://mongo:27017
+      MONGO_DB: jobmarket
+      MONGO_COLLECTION: raw_postings
+      POSTGRES_HOST: postgres
+      POSTGRES_PORT: "5432"
+      POSTGRES_DB: jobmarket
+      POSTGRES_USER: jobmarket
+      POSTGRES_PASSWORD: jobmarket
+    volumes:
+      - ./spark_jobs:/opt/app/spark_jobs
+      - ./scrapers/config:/opt/app/scrapers/config
+      - ./data:/opt/app/data
+    command: ["tail", "-f", "/dev/null"]
+
+  # --- Delivery: REST API (the monetizable data feed) ---
+  api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    depends_on:
+      postgres:
+        condition: service_healthy
+      minio:
+        condition: service_started
+      mongo:
+        condition: service_healthy
+    environment: *lake_env
+    ports:
+      - "8000:8000"
+    volumes:
+      - .:/app
+    command: ["uvicorn", "api.main:app", "--host", "0.0.0.0", "--port", "8000", "--reload"]
+
+  # --- Delivery: human-facing dashboard ---
+  dashboard:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    depends_on:
+      - api
+    environment:
+      API_BASE_URL: http://api:8000
+    ports:
+      - "8501:8501"
+    volumes:
+      - .:/app
+    command: ["streamlit", "run", "dashboard/app.py", "--server.address=0.0.0.0", "--server.port=8501", "--server.headless=true"]
+
+volumes:
+  minio_data:
+  mongo_data:
+  pg_data:

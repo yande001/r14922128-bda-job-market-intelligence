@@ -1,0 +1,31 @@
+# Spark image: PySpark batch engine with the jars baked in so the pipeline is
+# reproducible offline (no Maven/ivy downloads at run time).
+#   - hadoop-aws + aws-java-sdk-bundle  -> read/write MinIO via s3a://
+#   - postgresql JDBC                   -> write gold marts to PostgreSQL
+# Versions are pinned to match Spark 3.5.1 / Hadoop 3.3.4.
+FROM apache/spark:3.5.1
+
+USER root
+
+ENV HADOOP_AWS_VERSION=3.3.4 \
+    AWS_SDK_BUNDLE_VERSION=1.12.262 \
+    POSTGRES_JDBC_VERSION=42.7.3
+
+RUN set -eux; \
+    apt-get update; \
+    apt-get install -y --no-install-recommends curl python3-pip; \
+    rm -rf /var/lib/apt/lists/*; \
+    cd /opt/spark/jars; \
+    curl -fsSLO "https://repo1.maven.org/maven2/org/apache/hadoop/hadoop-aws/${HADOOP_AWS_VERSION}/hadoop-aws-${HADOOP_AWS_VERSION}.jar"; \
+    curl -fsSLO "https://repo1.maven.org/maven2/com/amazonaws/aws-java-sdk-bundle/${AWS_SDK_BUNDLE_VERSION}/aws-java-sdk-bundle-${AWS_SDK_BUNDLE_VERSION}.jar"; \
+    curl -fsSLO "https://repo1.maven.org/maven2/org/postgresql/postgresql/${POSTGRES_JDBC_VERSION}/postgresql-${POSTGRES_JDBC_VERSION}.jar"
+
+# Job-side Python deps (skills gazetteer parsing).
+RUN pip install --no-cache-dir pyyaml==6.0.2
+
+ENV PYTHONPATH=/opt/app
+WORKDIR /opt/app
+
+# Source is bind-mounted in compose; copy too so the image is self-contained.
+COPY spark_jobs ./spark_jobs
+COPY scrapers/config ./scrapers/config
