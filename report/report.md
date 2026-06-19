@@ -4,6 +4,7 @@
 **Student ID:** r14922128 &nbsp;|&nbsp; National Taiwan University &nbsp;|&nbsp; Spring 2026
 
 **GitHub repository:** https://github.com/yande001/r14922128-bda-job-market-intelligence
+
 **Live demo:** runs locally via `make demo` (see README); not publicly hosted.
 
 ---
